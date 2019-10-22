@@ -1,0 +1,53 @@
+##Download Global Superstore from here https://community.tableau.com/thread/194200 and add the file in Pandas working directory
+
+import pandas as pd
+ss=pd.read_csv('Global_Superstore.csv')
+
+##Create Product Dimension DF
+Products_df=ss[['Product ID', 'Category',
+       'Sub-Category', 'Product Name']]
+Products_df=Products_df.drop_duplicates(subset='Product ID')
+Products_df['Prod_ID']=range(1,len(Products_df)+1)
+
+##Create Customers Dimension DF
+Customers=ss[['Customer ID', 'Customer Name', 'Segment', 'City', 'State', 'Country',
+       'Postal Code', 'Market', 'Region']]
+Customers=Customers.drop_duplicates(subset='Customer ID')
+Customers['Cust_ID']=range(1,len(Customers)+1)
+
+##Creating Shipping Dimension DF
+Shipping=pd.DataFrame(ss['Ship Mode'])
+Shipping=Shipping.drop_duplicates()
+Shipping['Ship_ID']=range(1,len(Shipping)+1)
+
+##Creating Order Priority Dimenson DF
+
+Order_Priority=pd.DataFrame(ss['Order Priority'])
+Order_Priority=Order_Priority.drop_duplicates()
+Order_Priority['OP_ID']=range(1,1+len(Order_Priority))
+
+##Create Fact DM
+
+
+Fact=ss[['Row ID', 'Order ID', 'Order Date', 'Ship Date', 'Ship Mode','Product ID','Customer ID','Sales', 'Quantity', 'Discount',
+       'Profit', 'Shipping Cost', 'Order Priority']]
+       
+##Adding Customers Surrogate Key
+Fact=pd.merge(Fact,Customers[['Customer ID','Cust_ID']],on='Customer ID',how='inner')
+Fact=Fact.drop('Customer ID',axis=1)
+
+##Adding Order Priority Surrogate Key
+Fact=pd.merge(Fact,Order_Priority,on='Order Priority',how='inner')
+Fact=Fact.drop('Order Priority',axis=1)
+
+##Adding Products Surrogate Key
+Fact=pd.merge(Products[['Product ID','Prod_ID']],Fact,on='Product ID',how='inner')
+Fact=Fact.drop('Product ID',axis=1)
+
+##Adding Shipping surrogate key
+Fact=pd.merge(Fact,Shipping,on='Ship Mode',how='inner')
+Fact=Fact.drop('Ship Mode',axis=1)
+
+##Re-arrange columns in Fact DF
+Fact=Fact[['Row ID','Order ID','Order Date','Ship Date','Cust_ID','Prod_ID','OP_ID','Ship_ID','Sales','Profit','Quantity'
+          ,'Discount','Shipping Cost']]
