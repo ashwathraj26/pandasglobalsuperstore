@@ -1,4 +1,10 @@
-##Download Global Superstore from here https://community.tableau.com/thread/194200 and add the file in Pandas working directory
+##Download Global Superstore from here https://community.tableau.com/thread/194200 
+#Add the file in Pandas working directory
+#To find your current working directory 
+##import os   
+##print(os.getcwd())
+
+##CODE BEGINS
 
 import pandas as pd
 ss=pd.read_csv('Global_Superstore.csv')
