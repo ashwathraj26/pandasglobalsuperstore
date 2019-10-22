@@ -51,3 +51,5 @@ Fact=Fact.drop('Ship Mode',axis=1)
 ##Re-arrange columns in Fact DF
 Fact=Fact[['Row ID','Order ID','Order Date','Ship Date','Cust_ID','Prod_ID','OP_ID','Ship_ID','Sales','Profit','Quantity'
           ,'Discount','Shipping Cost']]
+
+##Date dim pending
