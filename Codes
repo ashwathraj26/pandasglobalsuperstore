@@ -8,6 +8,7 @@ Products_df=ss[['Product ID', 'Category',
        'Sub-Category', 'Product Name']]
 Products_df=Products_df.drop_duplicates(subset='Product ID')
 Products_df['Prod_ID']=range(1,len(Products_df)+1)
+Products=Products_df
 
 ##Create Customers Dimension DF
 Customers=ss[['Customer ID', 'Customer Name', 'Segment', 'City', 'State', 'Country',
@@ -89,7 +90,7 @@ Date=Date.drop('D',axis=1)
 ##Adding Surrogate Key
 Date['ODate_ID']=range(1,1+len(Date))
 
-Date.columns=['Date','Year','Month_Number','Day','Week','Month_Name','ODate_ID','DD']
+Date.columns=['Date','Year','Month_Number','Day','Week','Month_Name','ODate_ID']
 
 ##Same data type is required to merge DATE columns in DATE DF and Fact DF
 Fact['Order Date']=Fact['Order Date'].astype('datetime64[ns]')
@@ -113,20 +114,23 @@ date2=pd.date_range(start='1/1/2011',end=now,freq='D',dtype='datetime64[ns]')
 date2month2=date2.month_name()
 
 date2month2=pd.DataFrame(date2month2)
-
-gg.columns=['DD','Month_Name']
-Ship_Date=pd.concat([Ship_Date,gg],axis=1,ignore_index=True)
+date2=pd.DataFrame(date2)
 
 gg=pd.concat([date2,date2month2],axis=1)
+gg.columns=['DD','Month_Name']
+Ship_Date=pd.concat([Ship_Date,gg],axis=1,ignore_index=True)
+Ship_Date.columns=['Ship_Date','Year','Month','day','week','DD','Month_Name']
+Ship_Date=Ship_Date.drop('DD',axis=1)
 
 Ship_Date=pd.concat([Ship_Date,gg],axis=1)
 
-Ship_Date.columns=['Ship_Date','Year','Month','day','week','DD','Month_Name']
+
 
 Ship_Date['SDate_ID']=range(1,1+len(Ship_Date))
 
 ##Adding suffix to distinguish columns from order date columns
-Ship_Date=Ship_Date.addprefix('Ship_')
+Ship_Date=Ship_Date.add_prefix('Ship_')
+Ship_Date.rename(columns={'Ship_Ship_Date':'Ship_Date','Ship_SDate_ID':'SDate_ID'},inplace=True)
 
 Fact['Ship Date']=Fact['Ship Date'].astype('datetime64[ns]')
 Fact=pd.merge(Fact,Ship_Date[['Ship_Date','SDate_ID']],left_on='Ship Date',right_on='Ship_Date',how='inner')
@@ -139,14 +143,18 @@ Fact=Fact[['Row ID', 'Order ID', 'ODate_ID',
        'Profit', 'Quantity', 'Discount', 'Shipping Cost']]
 
 
+##Changing Work Directory
+import os
+os.chdir('MENTION THE DIRECTORY WHERE FILES NEED TO BE WRITTEN TO')
+
 ##Export DF as CSV
-Customers.to_csv('Customers.csv')
-Products.to_csv('Products.csv')
-Order_Priority.to_csv('Order_Priority.csv')
-Shipping.to_csv('Shipping.csv')
-Date.to_csv('Order Date.csv')
-Ship_Date.to_csv('Ship Date.csv')
-Fact.to_csv('Fact.csv')
+Customers.to_csv('Customers.csv',index=False)
+Products.to_csv('Products.csv',index=False)
+Order_Priority.to_csv('Order_Priority.csv',index=False)
+Shipping.to_csv('Shipping.csv',index=False)
+Date.to_csv('Order Date.csv',index=False)
+Ship_Date.to_csv('Ship Date.csv',index=False)
+Fact.to_csv('Fact.csv',index=False)
 
 
 
