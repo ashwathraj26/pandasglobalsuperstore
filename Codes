@@ -52,4 +52,93 @@ Fact=Fact.drop('Ship Mode',axis=1)
 Fact=Fact[['Row ID','Order ID','Order Date','Ship Date','Cust_ID','Prod_ID','OP_ID','Ship_ID','Sales','Profit','Quantity'
           ,'Discount','Shipping Cost']]
 
-##Date dim pending
+##Order Date Dim
+from datetime import datetime
+now = datetime.now()
+Date=pd.date_range(start='1/1/2011',end=now,freq='D',dtype='datetime64[ns]')
+Date=pd.DataFrame(Date)
+
+##Rename the column
+Date.columns=['Date']
+
+##Extracting Other Date fields
+Date['Year']=pd.DatetimeIndex(Date['Date']).year
+Date['Month']=pd.DatetimeIndex(Date['Date']).month
+Date['day']=pd.DatetimeIndex(Date['Date']).day
+Date['week']=pd.DatetimeIndex(Date['Date']).week
+
+##New df to create month name
+date1=pd.date_range(start='1/1/2011',end=now,freq='D',dtype='datetime64[ns]')
+date2month=date1.month_name()
+date2month=pd.DataFrame(date2month)
+date1=pd.DataFrame(date1)
+
+ff=pd.concat([date1,date2month],axis=1)
+
+##Naming columns
+ff.columns=['DAT','Month_Name']
+
+##Merging Date DF with DF containing Month Name
+Date=pd.concat([Date,ff],axis=1,ignore_index=True)
+
+#Renaming the columns
+Date.columns=['Date','Year','Month_Number','Day','Week','D','Month_Name']
+
+Date=Date.drop('D',axis=1)
+
+##Adding Surrogate Key
+Date['ODate_ID']=range(1,1+len(Date))
+
+Date.columns=['Date','Year','Month_Number','Day','Week','Month_Name','ODate_ID','DD']
+
+##Same data type is required to merge DATE columns in DATE DF and Fact DF
+Fact['Order Date']=Fact['Order Date'].astype('datetime64[ns]')
+Fact=pd.merge(Fact,Date[['ODate_ID','Date']],left_on='Order Date',right_on='Date',how='inner')
+
+Fact=Fact.drop(['Order Date','Date'],axis=1)
+
+##Create Ship date dim
+
+Ship_Date=pd.date_range(start='1/1/2011',end=now,freq='D',dtype='datetime64[ns]')
+
+Ship_Date=pd.DataFrame(Ship_Date)
+Ship_Date.columns=['Ship_Date']
+Ship_Date['Year']=pd.DatetimeIndex(Ship_Date['Ship_Date']).year
+Ship_Date['Month']=pd.DatetimeIndex(Ship_Date['Ship_Date']).month
+Ship_Date['day']=pd.DatetimeIndex(Ship_Date['Ship_Date']).day
+Ship_Date['week']=pd.DatetimeIndex(Ship_Date['Ship_Date']).week
+
+date2=pd.date_range(start='1/1/2011',end=now,freq='D',dtype='datetime64[ns]')
+
+date2month2=date2.month_name()
+
+date2month2=pd.DataFrame(date2month2)
+
+gg.columns=['DD','Month_Name']
+Ship_Date=pd.concat([Ship_Date,gg],axis=1,ignore_index=True)
+
+gg=pd.concat([date2,date2month2],axis=1)
+
+Ship_Date=pd.concat([Ship_Date,gg],axis=1)
+
+Ship_Date.columns=['Ship_Date','Year','Month','day','week','DD','Month_Name']
+
+Ship_Date['SDate_ID']=range(1,1+len(Ship_Date))
+
+##Adding suffix to distinguish columns from order date columns
+Ship_Date=Ship_Date.addprefix('Ship_')
+
+Fact['Ship Date']=Fact['Ship Date'].astype('datetime64[ns]')
+Fact=pd.merge(Fact,Ship_Date[['Ship_Date','SDate_ID']],left_on='Ship Date',right_on='Ship_Date',how='inner')
+
+Fact=Fact.drop(['Ship_Date','Ship Date'],axis=1)
+
+##Re-arranging columns
+Fact=Fact[['Row ID', 'Order ID', 'ODate_ID',
+       'SDate_ID', 'Cust_ID', 'Prod_ID', 'OP_ID', 'Ship_ID', 'Sales',
+       'Profit', 'Quantity', 'Discount', 'Shipping Cost']]
+
+
+
+
+
