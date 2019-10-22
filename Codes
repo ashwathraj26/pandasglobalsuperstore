@@ -137,6 +137,7 @@ Ship_Date['SDate_ID']=range(1,1+len(Ship_Date))
 ##Adding suffix to distinguish columns from order date columns
 Ship_Date=Ship_Date.add_prefix('Ship_')
 Ship_Date.rename(columns={'Ship_Ship_Date':'Ship_Date','Ship_SDate_ID':'SDate_ID'},inplace=True)
+Ship_Date=Ship_Date.drop('Ship_DD',axis=1)
 
 Fact['Ship Date']=Fact['Ship Date'].astype('datetime64[ns]')
 Fact=pd.merge(Fact,Ship_Date[['Ship_Date','SDate_ID']],left_on='Ship Date',right_on='Ship_Date',how='inner')
@@ -151,7 +152,7 @@ Fact=Fact[['Row ID', 'Order ID', 'ODate_ID',
 
 ##Changing Work Directory
 import os
-os.chdir('MENTION THE DIRECTORY WHERE FILES NEED TO BE WRITTEN TO')
+os.chdir('MENTON YOUR WORRKING DIRECTORY')
 
 ##Export DF as CSV
 Customers.to_csv('Customers.csv',index=False)
@@ -161,7 +162,6 @@ Shipping.to_csv('Shipping.csv',index=False)
 Date.to_csv('Order Date.csv',index=False)
 Ship_Date.to_csv('Ship Date.csv',index=False)
 Fact.to_csv('Fact.csv',index=False)
-
 
 
 
