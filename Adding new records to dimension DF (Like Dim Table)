@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+##Creating a dataframe
+df=pd.DataFrame({'ID':[1,2,3,4,5,6,7,8,9,10],
+                'NAME':['A','B','C',np.nan,'E',np.nan,np.nan,'H','I','J'],
+                'PLACE':['MAS','CBE','MAS','MAS','DEL','SBC','HYD','SBC','BOM','DEL']
+                ,'SAL':[1000,2000,3000,4500,np.nan,9000,np.nan,np.nan,6500,2300]})
+ 
+ 
+##Load unique PLACE into a dataframe
+plc=df.PLACE.unique()
+
+##Convert plc to a dataframe
+plc=pd.DataFrame(plc)
+
+##Give a column name
+plc.columns=['PLACE']
+
+##Create a new df. Append new records to existing DF
+
+new_row=pd.DataFrame({'ID':[11,12],'NAME':['X','A'],'PLACE':['AHD','MAS'],'SAL':[1220,8000]})
+df=pd.concat([df,new_row],ignore_index=True)
+
+##Extracting the PLACES that are not present in PLACE dimension table
+o=df[~df['PLACE'].isin(plc['PLACE'])][['PLACE']]
+o=pd.DataFrame(o)
+
+##Adding the new PLACES to place dimension table
+plc=pd.concat([plc,o],ignore_index=True)
+
+
+print(plc)
