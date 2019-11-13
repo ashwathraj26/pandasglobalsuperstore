@@ -1,3 +1,4 @@
+%%time
 import pandas as pd
 
 iowa=pd.read_csv(r'iowa.csv')
@@ -36,7 +37,7 @@ date_iowa=date_iowa.Date.str.split('-',expand=True,n=1)
 date_iowa.columns=['Year','M-D']
 
 ##Drop Year columns
-iowa=iowa.drop('Year',inplace=True)
+##iowa=iowa.drop('Year',inplace=True)
 
 
 date_iowa.Year=pd.DataFrame(Date_year)
@@ -61,6 +62,10 @@ iowa.Vendor_Name=iowa.Vendor_Name.astype('category')
 iowa.Item_Description=iowa.Item_Description.astype('category')
 iowa.Store_Location=iowa.Store_Location.astype('category')
 
+##Dropping DF's except Iowa
+del Date_year
+del date_iowa
 
 ##Write to CSV
-iowa.to_csv('Update_iowa.csv')
+##iowa.to_csv('Update_iowa.csv')
+iowa.dtypes
