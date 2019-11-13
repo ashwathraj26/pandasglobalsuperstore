@@ -35,6 +35,9 @@ date_iowa=date_iowa.Date.str.split('-',expand=True,n=1)
 ##Rename the columns
 date_iowa.columns=['Year','M-D']
 
+##Drop Year columns
+iowa=iowa.drop('Year',inplace=True)
+
 
 date_iowa.Year=pd.DataFrame(Date_year)
 
@@ -46,6 +49,18 @@ final_date=date_iowa.Year + '-' + date_iowa['M-D']
 
 ##Replace existing date fields with update one
 iowa['Date']=pd.DataFrame(final_date)
+
+##Convert to Category
+iowa.Invoice_Item_Number=iowa.Invoice_Item_Number.astype('category')
+iowa.Store_Name=iowa.Store_Name.astype('category')
+iowa.Address=iowa.Address.astype('category')
+iowa.City=iowa.City.astype('category')
+iowa.County=iowa.County.astype('category')
+iowa.Category_Name=iowa.Category_Name.astype('category')
+iowa.Vendor_Name=iowa.Vendor_Name.astype('category')
+iowa.Item_Description=iowa.Item_Description.astype('category')
+iowa.Store_Location=iowa.Store_Location.astype('category')
+
 
 ##Write to CSV
 iowa.to_csv('Update_iowa.csv')
