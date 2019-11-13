@@ -1,0 +1,51 @@
+import pandas as pd
+
+iowa=pd.read_csv(r'iowa.csv')
+
+
+##Extracting Year and creating a new column
+
+iowa['Year']=pd.DatetimeIndex(iowa['Date']).year
+
+##Copy the Year columns to a new variable
+Date_year=iowa.Year.copy()
+
+##Subtract all the years by 7
+Date_year=Date_year-7
+
+##Series have limited transformation option so we convert it into dataframes
+Date_year=pd.DataFrame(Date_year)
+
+##Replace existing Year column in Iowa with new Year
+iowa['Year']=Date_year
+
+iowa['Item_Description']=iowa['Item_Description'] + ' ' +iowa['Year'].astype(str)
+
+Date_year=pd.DataFrame(Date_year)
+
+##Copy the date column from Iowa to a new variable
+date_iowa=iowa.Date
+
+##Convert series to DF
+date_iowa=pd.DataFrame(date_iowa)
+
+##Split the date columns
+date_iowa=date_iowa.Date.str.split('-',expand=True,n=1)
+
+##Rename the columns
+date_iowa.columns=['Year','M-D']
+
+
+date_iowa.Year=pd.DataFrame(Date_year)
+
+##Convert year column into string to concatenate
+date_iowa.Year=date_iowa.astype(str)
+
+##Concatenate the columns
+final_date=date_iowa.Year + '-' + date_iowa['M-D']
+
+##Replace existing date fields with update one
+iowa['Date']=pd.DataFrame(final_date)
+
+##Write to CSV
+iowa.to_csv('Update_iowa.csv')
